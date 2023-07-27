@@ -17,3 +17,7 @@ impacket() {
 }
 
 ```
+
+It is important that the --rm -it and the docker image information is after the -v setting
+
+### Dockerfile
