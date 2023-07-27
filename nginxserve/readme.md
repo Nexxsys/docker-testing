@@ -1,4 +1,5 @@
-# You need to add the function to the `bashrc` or `zshrc` file to have a simple command run the docker container
+### NOTE
+You need to add the function to the `bashrc` or `zshrc` file to have a simple command run the docker container
 
 ```shell
 nginxhere() {
