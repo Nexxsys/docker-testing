@@ -18,7 +18,7 @@ impacket() {
 
 ```
 
-It is important that the --rm -it and the docker image information is after the -v setting
+It is important that the --rm -it and the docker image information is after the -v setting.  The -v setting sets your current working directory when you execute the function to mount as media.  That way you have access to your files on your host.  
 
 ### Dockerfile
 Source from here: [https://github.com/fortra/impacket/blob/master/Dockerfile]
