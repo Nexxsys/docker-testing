@@ -1,4 +1,11 @@
 ### NOTE
+
+You need to build this image first:
+```shell
+sudo docker build -t nginxserve .  ## Assumes Dockerfile is in the current directory
+```
+I called in `nginxserve` but you can call it whatever you want.
+
 You need to add the function to the `bashrc` or `zshrc` file to have a simple command run the docker container
 
 ```shell
