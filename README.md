@@ -1,4 +1,4 @@
-# docker-testing
+# Docker Testing
 Testing Docker container creation for rapid app deployment and usecases
 
 
