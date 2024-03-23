@@ -13,7 +13,7 @@ impacket_mirror() {
 
 impacket() {
     dirname=${PWD}
-    sudo docker run  -v ${dirname}:/media --rm -it evolution
+    sudo docker run  -v ${dirname}:/mnt --rm -it evolution
 }
 
 ```
