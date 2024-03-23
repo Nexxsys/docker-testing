@@ -62,5 +62,6 @@ If you example the Dockerfile you will notice I use the `ENTRYPOINT` directive t
 Zeek is a passive, open-source network traffic analyzer. Many operators use Zeek as a network security monitor (NSM) to support investigations of suspicious or malicious activity. Zeek also supports a wide range of traffic analysis tasks beyond the security domain, including performance measurement and troubleshooting.
 
 Read the Docs: https://docs.zeek.org/en/master/
+
 Cheat Sheet: https://github.com/corelight/zeek-cheatsheets/blob/master/Corelight-Zeek-Cheatsheets-3.0.4.pdf
 
