@@ -1,6 +1,8 @@
-# Docker Testing
-Testing Docker container creation for rapid app deployment and usecases
+Source: https://blog.ropnop.com/docker-for-pentesters/#example-1---exploring-other-oss
 
+Reference: https://docs.docker.com/engine/reference/commandline/run/
+
+Github: https://github.com/Nexxsys/docker-testing
 
 ## Learnings
 Adding the following to the `bashrc` or `zshrc` for quick deployment and clean-up of a 'temporary' container
@@ -13,7 +15,7 @@ impacket_mirror() {
 
 impacket() {
     dirname=${PWD}
-    sudo docker run  -v ${dirname}:/mnt --rm -it evolution
+    sudo docker run  -v ${dirname}:/media --rm -it evolution
 }
 
 ```
@@ -42,7 +44,7 @@ Source from here: https://github.com/ropnop/dockerfiles/tree/master/nginxserve
 ```shell
 sudo docker build -t nginxserve .  ## Assumes Dockerfile is in the current directory
 ```
-
+### NOTE
 You need to add the function to the `bashrc` or `zshrc` file to have a simple command run the docker container
 
 ```shell
@@ -57,11 +59,84 @@ If you example the Dockerfile you will notice I use the `ENTRYPOINT` directive t
 
  REFERENCE: [https://blog.ropnop.com/docker-for-pentesters/#example-1---exploring-other-oss]
 
-## Other Docker Containers
-#### Zeek
+### Files
+impacket-dockerfile
+```docker
+FROM python:3.8-alpine as compile
+WORKDIR /opt
+RUN apk add --no-cache git gcc musl-dev python3-dev libffi-dev openssl-dev cargo
+RUN apk add nano vim
+RUN python3 -m pip install virtualenv
+RUN virtualenv -p python venv
+ENV PATH="/opt/venv/bin:$PATH"
+RUN git clone --depth 1 https://github.com/fortra/impacket.git
+RUN python3 -m pip install impacket/
+
+FROM python:3.8-alpine
+COPY --from=compile /opt/venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+ENTRYPOINT ["/bin/sh"]
+```
+
+nginxserv-dockerfile
+```docker
+FROM nginx:stable
+RUN apt-get update && apt-get install -y openssl
+RUN mkdir -p /etc/nginx/ssl && mkdir -p /srv/data
+
+COPY default.conf /etc/nginx/conf.d/
+COPY start.sh /
+ENTRYPOINT [ "/start.sh" ]
+```
+
+start.sh
+```bash
+#!/bin/bash
+
+if [[ ! -f /etc/nginx/ssl/server.crt || ! -f /etc/nginx/ssl/server.crt ]]; then
+    openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/nginx/ssl/server.key -out /etc/nginx/ssl/server.crt -subj '/CN=www.example.com' 
+fi
+
+nginx -g 'daemon off;'
+```
+
+default.conf
+```bash
+server {
+    listen 80;
+    listen 443 default_server ssl;
+
+    server_name localhost;
+    ssl_certificate /etc/nginx/ssl/server.crt;
+    ssl_certificate_key /etc/nginx/ssl/server.key;
+
+
+    location / {
+        alias /srv/data/;
+        autoindex on;
+
+    }
+}
+```
+
+
+## New Addition
+Adding Zeek
+https://hub.docker.com/r/zeek/zeek
+[Read the docs](https://docs.zeek.org/en/master/)
 Zeek is a passive, open-source network traffic analyzer. Many operators use Zeek as a network security monitor (NSM) to support investigations of suspicious or malicious activity. Zeek also supports a wide range of traffic analysis tasks beyond the security domain, including performance measurement and troubleshooting.
+Zeek Cheat Sheet: https://github.com/corelight/zeek-cheatsheets/blob/master/Corelight-Zeek-Cheatsheets-3.0.4.pdf
 
-Read the Docs: https://docs.zeek.org/en/master/
+```bash
+sudo docker pull zeek/zeek:latest
 
-Cheat Sheet: https://github.com/corelight/zeek-cheatsheets/blob/master/Corelight-Zeek-Cheatsheets-3.0.4.pdf
+# Once that is complete you can now mount a directory (i.e. pcaps) to use zeek
 
+sudo docker -v run $(pwd):/mnt -it zeek/zeek sh
+# This will give you shell and mount your current working directory into the docker container
+
+# Next - example to break apart the pcap
+zeek -C -r workshop-part-03-01.pcap
+
+# bash to get root level in the container
+```
